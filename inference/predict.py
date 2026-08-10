@@ -1,8 +1,10 @@
-"""Letter prediction from 21 hand landmarks using Miriam's Random Forest."""
+"""Predict an ASL letter from 21 normalized hand landmarks."""
 
 from __future__ import annotations
 
 from typing import Any, Sequence
+
+import pandas as pd
 
 from .model import load_model
 from .normalize import FEATURE_NAMES, NUM_FEATURES, normalize_landmarks
@@ -13,26 +15,11 @@ def predict_letter(
     model: Any | None = None,
 ) -> str | None:
     """
-    Predict an ASL letter from 21 MediaPipe-style landmarks.
+    Normalize 21 landmarks and predict a letter with the Random Forest.
 
-    Problem this solves:
-      Connects live (or test) landmarks to the trained Random Forest using the
-      same normalization + 63-feature layout as training, without a label encoder.
-
-    Input:
-      landmarks — exactly 21 landmarks with x, y, z (MediaPipe objects or
-      sequences). Landmark 0 is the wrist.
-      model — optional preloaded estimator from load_model(). If omitted,
-      load_model() is called so teammates can either inject a shared model
-      or rely on the default loader.
-
-    Output:
-      Predicted letter as a Python str (e.g. "A"), or None if
-      normalize_landmarks() returns None (degenerate / zero-scale hand).
-
-    Pipeline:
-      21 landmarks → normalize_landmarks() → (63,) vector → model.predict
-      → letter string. No LabelEncoder; predict() already returns letters.
+    Pass an optional preloaded model from load_model() to avoid reloading.
+    Returns a Python str letter, or None if normalization fails (degenerate hand).
+    No label encoder — model.predict() already returns letter strings.
     """
     features = normalize_landmarks(landmarks)
     if features is None:
@@ -46,10 +33,8 @@ def predict_letter(
 
     estimator = model if model is not None else load_model()
 
-    # Shape (1, 63) with training column names when the estimator stored them.
+    # Use training column names when the estimator stored them
     if hasattr(estimator, "feature_names_in_"):
-        import pandas as pd
-
         x = pd.DataFrame([features], columns=FEATURE_NAMES)
     else:
         x = features.reshape(1, NUM_FEATURES)

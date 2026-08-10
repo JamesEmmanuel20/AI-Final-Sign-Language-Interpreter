@@ -1,11 +1,4 @@
-"""
-Wrist-relative landmark normalization matching asl_normalizer.py.
-
-Training used:
-  translated = coords - wrist
-  normalized = translated / max(||translated||)
-  flattened as x0,y0,z0,...,x20,y20,z20
-"""
+"""Normalize 21 hand landmarks the same way as asl_normalizer.py."""
 
 from __future__ import annotations
 
@@ -25,7 +18,7 @@ FEATURE_NAMES = [
 
 
 def _landmark_to_xyz(landmark: Any) -> tuple[float, float, float]:
-    """Extract (x, y, z) from a MediaPipe-like object or a 3-length sequence."""
+    """Pull (x, y, z) from a MediaPipe landmark or a length-3 sequence."""
     if hasattr(landmark, "x") and hasattr(landmark, "y") and hasattr(landmark, "z"):
         return float(landmark.x), float(landmark.y), float(landmark.z)
 
@@ -38,12 +31,7 @@ def _landmark_to_xyz(landmark: Any) -> tuple[float, float, float]:
 
 
 def landmarks_to_coords(landmarks: Sequence[Any]) -> np.ndarray:
-    """
-    Convert 21 landmarks into a float array of shape (21, 3).
-
-    Input:  exactly 21 landmarks (MediaPipe landmark objects or (x, y, z) values)
-    Output: numpy array shape (21, 3), row i = landmark i = [x, y, z]
-    """
+    """Convert exactly 21 landmarks to a float array of shape (21, 3)."""
     if len(landmarks) != NUM_LANDMARKS:
         raise ValueError(
             f"Expected exactly {NUM_LANDMARKS} landmarks, got {len(landmarks)}."
@@ -62,44 +50,23 @@ def landmarks_to_coords(landmarks: Sequence[Any]) -> np.ndarray:
 
 def normalize_landmarks(landmarks: Sequence[Any]) -> np.ndarray | None:
     """
-    Apply the same wrist translation + max-distance scale as asl_normalizer.py.
+    Wrist-translate and max-distance scale 21 landmarks (matches training).
 
-    Problem this solves:
-      Raw MediaPipe coordinates depend on hand position in the frame and
-      distance from the camera. Training removed both effects; live inference
-      must do the same before calling the Random Forest.
-
-    Input:
-      Exactly 21 landmarks, each with x, y, z (MediaPipe objects or sequences).
-      Landmark 0 is treated as the wrist.
-
-    Output:
-      - numpy array of shape (63,) in order x0,y0,z0,...,x20,y20,z20, or
-      - None if the hand is degenerate (max wrist distance == 0), matching
-        the training script's skip of invalid rows (avoids NaN/Inf).
-
-    Why this matches training:
-      Identical math to asl_normalizer.py:
-        wrist = coords[0]
-        translated = coords - wrist
-        distances = ||translated|| per landmark
-        normalized = translated / max(distances)
-      then interleaved flatten. No LabelEncoder or extra features.
+    Returns a (63,) vector in order x0,y0,z0,...,x20,y20,z20, or None if
+    max distance from the wrist is 0 (avoids NaN/Inf; training skipped those rows).
     """
     coords = landmarks_to_coords(landmarks)
 
-    # Wrist = landmark 0 (same as asl_normalizer.py)
+    # Landmark 0 is the wrist — same origin as asl_normalizer.py
     wrist = coords[0].copy()
     translated = coords - wrist
 
     distances = np.linalg.norm(translated, axis=1)
     max_distance = float(distances.max())
-
-    # Training skipped rows when max_distance == 0; do not divide.
     if max_distance == 0.0:
         return None
 
     normalized = translated / max_distance
 
-    # Flatten in interleaved training order: x0,y0,z0,...,x20,y20,z20
+    # Interleaved training order: x0,y0,z0,...,x20,y20,z20
     return normalized.reshape(NUM_FEATURES)

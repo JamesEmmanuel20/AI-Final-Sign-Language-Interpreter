@@ -1,4 +1,4 @@
-"""Reusable ASL landmark normalization and model inference helpers."""
+"""ASL landmark normalization and Random Forest inference helpers."""
 
 from .model import DEFAULT_MODEL_PATH, load_model
 from .normalize import (
