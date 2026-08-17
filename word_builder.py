@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from collections import Counter, deque
 
-PREDICTION_BUFFER_SIZE = 5
+PREDICTION_BUFFER_SIZE = 10
 # Consecutive no-hand frames before a repeated letter (OO in BOOK) can be added.
-NO_HAND_RESET_FRAMES = 5
+NO_HAND_RESET_FRAMES = 15
 
 
 def majority_letter(buffer: deque[str]) -> str | None:
@@ -17,14 +17,16 @@ def majority_letter(buffer: deque[str]) -> str | None:
 
 
 def committed_letter(buffer: deque[str]) -> str | None:
-    """Letter to append only when the buffer is full and every vote agrees."""
     if len(buffer) != PREDICTION_BUFFER_SIZE:
         return None
-    first = buffer[0]
-    if all(letter == first for letter in buffer):
-        return first
-    return None
 
+    counts = Counter(buffer)
+    letter, votes = counts.most_common(1)[0]
+
+    if votes >= 9:
+        return letter
+
+    return None
 
 class WordBuilder:
     def __init__(self) -> None:
