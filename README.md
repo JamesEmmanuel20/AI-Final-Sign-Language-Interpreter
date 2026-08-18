@@ -124,11 +124,13 @@ viii. Git/GitHub
 ## Clone the repository:
 
 git clone https://github.com/JamesEmmanuel20/AI-Final-Sign-Language-Interpreter.git
+
 cd AI-Final-Sign-Language-Interpreter
 
 # Create and activate a virtual environment:
 ## Windows
 python -m venv .venv
+
 .venv\Scripts\Activate.ps1
 
 
