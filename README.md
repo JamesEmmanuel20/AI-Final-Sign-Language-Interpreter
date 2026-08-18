@@ -36,23 +36,41 @@ xiii. PySide6 graphical user interface
 
 ## System Pipeline
 Webcam
+
    ↓
+   
 MediaPipe Hand Detection
+
    ↓
+   
 21 Hand Landmarks
+
    ↓
+   
 Landmark Normalization
+
    ↓
+   
 63 Features
+
    ↓
+   
 Random Forest Classifier
+
    ↓
+   
 Predicted Letter
+
    ↓
+   
 Word Builder
+
    ↓
+   
 PySide6 Interface
+
    ↓
+   
 Translation
 
 
