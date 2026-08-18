@@ -87,13 +87,13 @@ iii. 63 features per sample
 The model was evaluated using stratified 5-fold cross-validation.
 
 ## Results
-Metric                           Result
+Metric                               Result
 
-Average 5-Fold CV Accuracy         95.23%
+Average 5-Fold CV Accuracy           95.23%
 
-Standard Deviation                 1.28%
+Standard Deviation                   1.28%
 
-Separate Test Accuracy              94.1%
+Separate Test Accuracy               94.1%
 
 While overall performance is strong, performance varies between individual letters. N, U, and V were among the weaker classes during evaluation.
 The confusion matrix is used to identify class-specific misclassifications and guide future improvements.
