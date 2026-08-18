@@ -8,17 +8,29 @@ The predicted letters are then processed by a word-building component that stabi
 
 ## Features
 i. Real-time webcam-based hand detection
+
 ii. Recognition of 24 ASL alphabet letters
+
 iii. 21 hand landmarks extracted using MediaPipe
+
 iv. 63 normalized features used for classification
+
 v. Random Forest letter classification
+
 vi. Prediction stabilization using a 10-frame buffer
+
 vii. 9/10 prediction agreement before committing a letter
+
 viii. Real-time translation display
+
 ix. Clear translation
+
 x. Backspace
+
 xi. Add space
+
 xii. Start and stop camera controls
+
 xiii. PySide6 graphical user interface
 
 
@@ -43,12 +55,15 @@ PySide6 Interface
    ↓
 Translation
 
+
 ## Machine Learning Model
 We use a Random Forest Classifier for ASL letter recognition.
 
 The current dataset contains:
 i. 1,846 samples
+
 ii. 24 ASL letters
+
 iii. 63 features per sample
 
 The model was evaluated using stratified 5-fold cross-validation.
@@ -72,12 +87,19 @@ This provides a balance between prediction stability and real-time responsivenes
 
 ## Technologies Used
 i. Python
+
 ii. MediaPipe
+
 iii. OpenCV
+
 iv. NumPy
+
 v. Pandas
+
 vi. Scikit-learn
+
 vii. PySide6
+
 viii. Git/GitHub
 
 # Installation
